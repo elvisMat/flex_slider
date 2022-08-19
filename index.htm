@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flex Slider</title>
+</head>
+
+<body>
+    <div class="slides">
+        <div class="slide f"></div>
+        <div class="slide s"></div>
+        <div class="slide t"></div>
+        <div class="slide f"></div>
+        <div class="slide s"></div>
+        <div class="slide t"></div>
+
+    </div>
+    <button class="lBtn">
+        Left
+    </button> <button class="rBtn">
+        right
+    </button>
+</body>
+<style>
+    * {
+        /* background: red; */
+        margin: 0;
+        padding: 0;
+    }
+
+    .slides {
+        display: flex;
+        width: 100vw;
+        height: 100vh;
+        overflow: scroll;
+        /* scroll-snap-type: x mandatory; */
+        /* scroll-behavior: auto; */
+
+        /* width: 10; */
+    }
+
+    .slides::-webkit-scrollbar {
+        display: none;
+    }
+
+    .slides {
+        -ms-overflow-style: none;
+        scrollbar-width: 0;
+    }
+
+    .slide {
+        /* flex: 1; */
+        flex-shrink: 0;
+        flex-basis: 100%;
+        height: 60%;
+    }
+
+    .slide.f {
+        background: #f005;
+        /* for visualisation */
+    }
+
+    .slide.s {
+        background: #0f05;
+        /* for visualisation */
+    }
+
+    .slide.t {
+        background: #00f5;
+        /* for visualisation */
+    }
+
+    .lBtn {
+        position: absolute;
+        left: 0;
+        top: 25%;
+        font-size: 24px;
+    }
+
+    .rBtn {
+        position: absolute;
+        right: 0;
+        top: 25%;
+        font-size: 24px;
+    }
+
+    .slide,
+    .slide-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .slide-content {
+        flex-direction: column;
+    }
+</style>
+<script defer>
+    const lBtn = document.querySelector('.lBtn'); //get left button
+    const rBtn = document.querySelector('.rBtn'); //get right button
+    const slides = document.querySelector('.slides'); //get the parents of the slides
+
+    !slides && console.error('Element with class "slides" is not found');
+
+    //get an array of slides from an Array funtions.
+    let allSlides = Array.from(document.getElementsByClassName('slide'));
+    let completeScroll = allSlides[0].scrollWidth
+
+    if (allSlides.length < 2) {
+        console.error('There must be at least two slides');
+
+    }
+    else {
+
+
+        //get width of slide. 
+        let completeScroll = allSlides[0].scrollWidth
+
+        //scroll width. At each scroll, this value is to increment/decrement by completeScroll to scroll to
+        //correct slide eg. if length of one slide is 120, 3rd slide is at width 120+120+120
+        //of which is the correct value to use is element.scroll()  
+        scrollWidth = 0;
+
+        //for  visualization purposes only
+        allSlides.map((e, i) => {
+            e.innerHTML = `<div class='slide-content'>
+            <h1> Slide ${i + 1} </h1>
+            <h3 >${e.offsetWidth}</h3>
+            </div> `
+
+        })
+
+        //scroll to right ie 'next'
+        function scrollToRight() {
+
+            //scroll right until its at the last slide only 
+            if (scrollWidth < (completeScroll * (allSlides.length - 1))) {
+                scrollWidth += completeScroll;
+                slides.scroll({
+                    top: 0,
+                    left: scrollWidth,
+                    behavior: 'smooth'
+                })
+            }
+
+            //if its at last slide scroll to beginning slide
+            else {
+                scrollToAbsL()
+
+            }
+
+        }
+    }
+    //scroll to left ie 'prev'
+    function scrollToLeft() {
+        //scroll left until its at the first slide  
+        if (scrollWidth != 0) {
+            scrollWidth -= completeScroll;
+            slides.scroll({
+                top: 0,
+                left: +scrollWidth,
+                behavior: 'smooth'
+            })
+        }
+        //if its at last slide scroll to beginning slide
+        else {
+            //@line 181
+            scrollToAbsR()
+        }
+
+    }
+
+    //scroll to left most slide or the first or begginning slide
+    //used when at the last side
+    function scrollToAbsL() {
+        slides.scroll({
+            top: 0,
+            left: -scrollWidth,
+            behavior: 'smooth'
+        })
+        //reset to init value
+        scrollWidth = 0;
+
+    }
+
+    //scroll to right most slide or last slide
+    //used when at the first side
+    function scrollToAbsR() {
+        // completeScroll = slides[0].scrollWidth
+        //console.log('scrolling r')
+        slides.scroll({
+            top: 0,
+            left: completeScroll * (allSlides.length - 1),
+            behavior: 'smooth'
+        })
+        scrollWidth = completeScroll * (allSlides.length - 1);
+
+    }
+
+
+    rBtn.addEventListener("click", scrollToRight);
+    lBtn.addEventListener("click", scrollToLeft);
+</script>
+
+</html>
